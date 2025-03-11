@@ -1,0 +1,56 @@
+import React, { useState } from "react";
+
+const fractions = [
+  { fraction: "1/2", equivalent: "2/4" },
+  { fraction: "3/4", equivalent: "6/8" },
+  { fraction: "2/3", equivalent: "4/6" },
+  { fraction: "1/3", equivalent: "2/6" },
+  { fraction: "3/5", equivalent: "6/10" },
+];
+
+const shuffledFractions = fractions.flatMap((f) => [f.fraction, f.equivalent]).sort(() => Math.random() - 0.5);
+
+export default function FractionMatchGame() {
+  const [selected, setSelected] = useState(null);
+  const [pairs, setPairs] = useState([]);
+  const [message, setMessage] = useState("");
+
+  const handleSelect = (fraction) => {
+    if (!selected) {
+      setSelected(fraction);
+    } else {
+      if (
+        fractions.find(
+          (f) =>
+            (f.fraction === selected && f.equivalent === fraction) ||
+            (f.equivalent === selected && f.fraction === fraction)
+        )
+      ) {
+        setPairs([...pairs, selected, fraction]);
+        setMessage("✅ Correct Match!");
+      } else {
+        setMessage("❌ Try Again!");
+      }
+      setSelected(null);
+    }
+  };
+
+  return (
+    <div className="p-5 text-center">
+      <h1 className="text-xl font-bold mb-4">🎯 Match the Equivalent Fractions!</h1>
+      <p className="mb-2">Click two fractions to check if they match.</p>
+      <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
+        {shuffledFractions.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => handleSelect(item)}
+            className={`p-3 rounded-lg border-2 ${pairs.includes(item) ? "bg-green-300" : "bg-white"}`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+      {message && <p className="mt-4 text-lg font-semibold">{message}</p>}
+    </div>
+  );
+}
