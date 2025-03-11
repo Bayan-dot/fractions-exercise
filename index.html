@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraction Match Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 300px; margin: auto; }
+        button { padding: 10px; font-size: 18px; border: 2px solid #000; border-radius: 5px; cursor: pointer; }
+        .matched { background-color: lightgreen; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Match the Equivalent Fractions!</h1>
+    <p>Click two fractions to check if they match.</p>
+    <div class="grid" id="fractionGrid"></div>
+    <p id="message"></p>
+
+    <script>
+        const fractions = [
+            { fraction: "1/2", equivalent: "2/4" },
+            { fraction: "3/4", equivalent: "6/8" },
+            { fraction: "2/3", equivalent: "4/6" },
+            { fraction: "1/3", equivalent: "2/6" },
+            { fraction: "3/5", equivalent: "6/10" },
+        ];
+
+        let shuffledFractions = fractions.flatMap(f => [f.fraction, f.equivalent]).sort(() => Math.random() - 0.5);
+        let selected = null;
+        let pairs = [];
+
+        const grid = document.getElementById("fractionGrid");
+        const message = document.getElementById("message");
+
+        function handleSelect(fraction, button) {
+            if (!selected) {
+                selected = { fraction, button };
+                button.style.backgroundColor = "lightblue";
+            } else {
+                let match = fractions.some(f => 
+                    (f.fraction === selected.fraction && f.equivalent === fraction) || 
+                    (f.equivalent === selected.fraction && f.fraction === fraction)
+                );
+
+                if (match) {
+                    selected.button.classList.add("matched");
+                    button.classList.add("matched");
+                    pairs.push(selected.fraction, fraction);
+                    message.textContent = "✅ Correct Match!";
+                } else {
+                    message.textContent = "❌ Try Again!";
+                    selected.button.style.backgroundColor = "";
+                }
+                selected = null;
+            }
+        }
+
+        shuffledFractions.forEach(fraction => {
+            let button = document.createElement("button");
+            button.textContent = fraction;
+            button.onclick = () => handleSelect(fraction, button);
+            grid.appendChild(button);
+        });
+    </script>
+</body>
+</html>
